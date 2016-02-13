@@ -1,0 +1,1424 @@
+{
+  "version": "1.1.2",
+  "protocols": [
+    {
+      "name": "KunkelSiegel",
+      "description": "A protocol for the assembly of constructs for Kunkel Mutagenesis.",
+      "dependencies": [],
+      "command_string": "python kunkel_full.py",
+      "inputs": {
+        "construct_setup":{
+          "label":"Construct Parameters",
+          "type":"group",
+          "description": "Input parameters to assemble mutant constructs.",
+          "inputs":{
+            "ssDNA": {
+              "type": "aliquot",
+              "label": "ssDNA"
+              },
+          "num_colonies": {
+            "label": "Number of Colonies to Pick.",
+            "type": "integer",
+            "description": "Number of colonies to pick per mutant for growth and sequencing.",
+            "default": "3"
+          },
+          "growth_media": {
+            "label": "Antibiotic Resistance",
+            "type": "choice",
+            "description": "Antibiotic to add to growth media and agar for picked colonies.",
+            "default": "lb-broth-50ug-ml-kan",
+            "options": [
+              {
+                "value": "lb-broth-100ug-ml-amp",
+                "name": "Ampicillin"
+              },
+              {
+                "value": "lb-broth-50ug-ml-kan",
+                "name": "Kanamycin"
+              },
+              {
+                "value": "lb-broth-100ug-ml-specto",
+                "name": "Spectinomycin"
+              }
+            ]
+          },
+          "mutant_upload": {
+            "type": "csv",
+            "label": "Mutant Constructs",
+            "description":"Upload a CSV containing oligos to synthesize for mutant constructs.",
+            "template": {
+              "label": "Upload CSV",
+              "header": [
+                "mutant_label",
+                "oligo_label",
+                "sequence",
+                "scale",
+                "purification"
+              ],
+              "rows": [
+                [
+                  "mutant_1",
+                  "oligo_1",
+                  "atatatatatatatatatatatatatatatatatatatatatatatatatatatatat",
+                  "25nm",
+                  "standard"
+                ],
+                [
+                  "mutant_1",
+                  "oligo_2",
+                  "gggatatatatatatatatatatatatatatatatatatatatatatatatg",
+                  "25nm",
+                  "standard"
+                ],
+                [
+                  "mutant_1",
+                  "oligo_3",
+                  "ggctgatatatatatatatatatatatatatatatatatatatatatatatatatatat",
+                  "25nm",
+                  "standard"
+                ],
+                [
+                  "mutant_2",
+                  "oligo_3",
+                  "ggctgatatatatatatatatatatatatatatatatatatatatatatatatatatat",
+                  "25nm",
+                  "standard"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "sequencing":{
+        "type": "group+",
+        "label": "RCA Sequencing",
+        "description": "Select one or more sequencing primers or None.",
+        "inputs": {
+          "seq_choice":{
+              "type": "choice",
+              "label": "Sequencing Primers",
+              "default": "No sequencing.",
+              "options": [
+                {
+                  "value": "T7 Forward",
+                  "name": "T7 Forward"
+                },
+                {
+                  "value": "T7 Reverse",
+                  "name": "T7 Reverse"
+                },
+                {
+                  "value": "T3",
+                  "name": "T3"
+                },
+                {
+                  "value": "SP6",
+                  "name": "SP6"
+                },
+                {
+                  "value": "M13 Reverse",
+                  "name": "M13 Reverse"
+                },
+                {
+                  "value": "M13 Forward (-20)",
+                  "name": "M13 Forward (-20)"
+                },
+                {
+                  "value": "M13 Forward (-40)",
+                  "name": "M13 Forward (-40)"
+                },
+                {
+                  "value": "pGEX Forward",
+                  "name": "pGEX Forward"
+                },
+                {
+                  "value": "pGEX Reverse",
+                  "name": "pGEX Reverse"
+                },
+                {
+                  "value": "BghRev",
+                  "name": "BghRev"
+                },
+                {
+                  "value": "ATTL-F",
+                  "name": "ATTL-F"
+                },
+                {
+                  "value": "ATTL-R",
+                  "name": "ATTL-R"
+                },
+                {
+                  "value": "pET",
+                  "name": "pET"
+                },
+                {
+                  "value": "T7 Forward (short)",
+                  "name": "T7 Forward (short)"
+                },
+                {
+                  "value": "gSP6",
+                  "name": "gSP6"
+                },
+                {
+                  "value": "KBR/TJ",
+                  "name": "KBR/TJ"
+                },
+                {
+                  "value": "EGFP-C",
+                  "name": "EGFP-C"
+                },
+                {
+                  "value": "EGFP-N",
+                  "name": "EGFP-N"
+                },
+                {
+                  "value": "CMV-F",
+                  "name": "CMV-F"
+                 },
+                {
+                  "value": "No sequencing.",
+                  "name": "No sequencing."
+                 }
+              ]
+            }
+          }
+        },
+        "other_processing":{
+          "type":"group",
+          "description": "Miniprep your samples or get a plate containing colonies with or without 40% glycerol.",
+          "label": "Colony Processing",
+          "inputs":{
+            "other_processing":{
+              "type": "choice",
+              "label":"Miniprep/Return Colonies",
+              "default": "No processing.",
+              "options":[
+                {
+                  "name": "Miniprep",
+                  "value": "Miniprep"
+                },
+                {
+                  "name": "Return Colonies",
+                  "value": "Return Colonies"
+                },
+
+                {
+                  "name": "Return Colonies With Glycerol",
+                  "value": "Return Colonies Glycerol"
+                },
+                {
+                  "name": "None",
+                  "value": "No processing."
+                }
+              ]
+            }
+          }
+        }
+      },
+      "preview": {
+        "refs": {
+          "ssDNA_source": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "1000:microliter"
+              }
+            }
+          }
+        },
+        "parameters": {
+          "other_processing": {"other_processing": "Miniprep"},
+          "construct_setup":{
+            "num_colonies": 3,
+            "ssDNA": "ssDNA_source/0",
+            "growth_media": "lb-broth-100ug-ml-specto",
+            "mutant_upload": [
+              {
+                "mutant_label": "mutant_1",
+                "oligo_label": "oligo_1",
+                "sequence": "agagagagagagagagagagagagagagag",
+                "scale": "25nm",
+                "purification": "standard"
+              },
+              {
+                "mutant_label": "mutant_1",
+                "oligo_label": "oligo_2",
+                "sequence": "agagagagagagagagagagagagagagagtt",
+                "scale": "25nm",
+                "purification": "standard"
+              },
+              {
+                "mutant_label": "mutant_2",
+                "oligo_label": "oligo_2",
+                "sequence": "agagagagagagagagagagagagagagagtt",
+                "scale": "25nm",
+                "purification": "standard"
+              }
+            ]
+          },
+          "sequencing":[
+            {
+              "seq_choice":"No sequencing."}, {"seq_choice":"M13 Forward (-20)"
+              }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Assemble",
+      "dependencies": [],
+      "command_string": "python assemble.py",
+      "inputs": {
+        "ssDNA": {
+          "type": "aliquot",
+          "label": "ssDNA"
+        },
+        "constructs": {
+          "type": "group+",
+          "inputs": {
+            "oligos": {
+              "type": "aliquot+",
+              "label": "Mutation Containing Oligo(s)"
+            },
+            "mutant_name": {
+              "type": "string",
+              "label": "Construct Name (required)"
+            }
+          }
+        }
+      },
+      "preview": {
+        "refs": {
+          "ssDNA_source": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "1000:microliter"
+              }
+            }
+          },
+          "oligo_1": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_2": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_3": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_4": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_5": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_6": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_7": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_8": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_9": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_10": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_11": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_12": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_13": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_14": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "oligo_15": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          }
+        },
+        "parameters": {
+          "ssDNA": "ssDNA_source/0",
+          "constructs": [
+            {
+              "oligos": [
+                "oligo_1/0"
+              ],
+              "mutant_name": "mutant_1"
+            },
+            {
+              "oligos": [
+                "oligo_2/0"
+              ],
+              "mutant_name": "mutant_2"
+            },
+            {
+              "oligos": [
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_3"
+            },
+            {
+              "oligos": [
+                "oligo_4/0"
+              ],
+              "mutant_name": "mutant_8"
+            },
+            {
+              "oligos": [
+                "oligo_1/0",
+                "oligo_2/0"
+              ],
+              "mutant_name": "mutant_4"
+            },
+            {
+              "oligos": [
+                "oligo_1/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_5"
+            },
+            {
+              "oligos": [
+                "oligo_2/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_6"
+            },
+            {
+              "oligos": [
+                "oligo_1/0",
+                "oligo_2/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_7"
+            },
+            {
+              "oligos": [
+                "oligo_4/0",
+                "oligo_5/0"
+              ],
+              "mutant_name": "mutant_9"
+            },
+            {
+              "oligos": [
+                "oligo_4/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_10"
+            },
+            {
+              "oligos": [
+                "oligo_6/0"
+              ],
+              "mutant_name": "mutant_11"
+            },
+            {
+              "oligos": [
+                "oligo_7/0"
+              ],
+              "mutant_name": "mutant_12"
+            },
+            {
+              "oligos": [
+                "oligo_8/0"
+              ],
+              "mutant_name": "mutant_13"
+            },
+            {
+              "oligos": [
+                "oligo_9/0"
+              ],
+              "mutant_name": "mutant_14"
+            },
+            {
+              "oligos": [
+                "oligo_10/0",
+                "oligo_11/0"
+              ],
+              "mutant_name": "mutant_15"
+            },
+            {
+              "oligos": [
+                "oligo_10/0",
+                "oligo_9/0"
+              ],
+              "mutant_name": "mutant_16"
+            },
+            {
+              "oligos": [
+                "oligo_2/0",
+                "oligo_7/0"
+              ],
+              "mutant_name": "mutant_17"
+            },
+            {
+              "oligos": [
+                "oligo_9/0",
+                "oligo_11/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_18"
+            },
+            {
+              "oligos": [
+                "oligo_8/0",
+                "oligo_5/0"
+              ],
+              "mutant_name": "mutant_19"
+            },
+            {
+              "oligos": [
+                "oligo_8/0",
+                "oligo_3/0"
+              ],
+              "mutant_name": "mutant_20"
+            },
+            {
+              "oligos": [
+                "oligo_12/0"
+              ],
+              "mutant_name": "mutant_21"
+            },
+            {
+              "oligos": [
+                "oligo_13/0"
+              ],
+              "mutant_name": "mutant_22"
+            },
+            {
+              "oligos": [
+                "oligo_15/0"
+              ],
+              "mutant_name": "mutant_23"
+            },
+            {
+              "oligos": [
+                "oligo_14/0"
+              ],
+              "mutant_name": "mutant_24"
+            },
+            {
+              "oligos": [
+                "oligo_14/0",
+                "oligo_15/0"
+              ],
+              "mutant_name": "mutant_25"
+            },
+            {
+              "oligos": [
+                "oligo_12/0",
+                "oligo_13/0"
+              ],
+              "mutant_name": "mutant_26"
+            },
+            {
+              "oligos": [
+                "oligo_10/0",
+                "oligo_12/0",
+                "oligo_13/0"
+              ],
+              "mutant_name": "mutant_27"
+            },
+            {
+              "oligos": [
+                "oligo_15/0",
+                "oligo_8/0"
+              ],
+              "mutant_name": "mutant_28"
+            },
+            {
+              "oligos": [
+                "oligo_14/0",
+                "oligo_7/0"
+              ],
+              "mutant_name": "mutant_29"
+            },
+            {
+              "oligos": [
+                "oligo_12/0",
+                "oligo_4/0"
+              ],
+              "mutant_name": "mutant_30"
+            },
+            {
+              "oligos": [
+                "oligo_15/0",
+                "oligo_5/0"
+              ],
+              "mutant_name": "mutant_31"
+            },
+            {
+              "oligos": [
+                "oligo_13/0",
+                "oligo_6/0"
+              ],
+              "mutant_name": "mutant_32"
+            }
+          ]
+        }
+      },
+      "description": "A protocol for the assembly of constructs for Kunkel Mutagenesis."
+    },
+    {
+      "name": "Transform",
+      "dependencies": [],
+      "command_string": "python transform.py",
+      "inputs": {
+        "constructs": {
+          "type": "aliquot+",
+          "label": "Samples to Transform and Grow using Zymo 10B Competent Cells"
+        },
+        "num_colonies": {
+          "type": "integer",
+          "default": 3,
+          "label": "Number of colonies to pick per construct."
+        },
+        "growth_media": {
+          "label": "Antibiotic Resistance",
+          "type": "choice",
+          "description": "Antibiotic to add to growth media and agar.",
+          "default": "lb-broth-100ug-ml-amp",
+          "options": [
+            {
+              "value": "lb-broth-100ug-ml-amp",
+              "name": "Ampicillin"
+            },
+            {
+              "value": "lb-broth-50ug-ml-kan",
+              "name": "Kanamycin"
+            },
+            {
+              "value": "lb-broth-25ug-ml-cm",
+              "name": "Chloroamphenicol"
+            },
+            {
+              "value": "lb-broth-100ug-ml-specto",
+              "name": "Spectinomycin"
+            }
+          ]
+        }
+      },
+      "preview": {
+        "refs": {
+          "construct_aliquots": {
+            "type": "384-pcr",
+            "store": "cold_4",
+            "aliquots": {
+              "0": {
+                "volume": "6:microliter"
+              },
+              "1": {
+                "volume": "6:microliter"
+              },
+              "2": {
+                "volume": "6:microliter"
+              },
+              "3": {
+                "volume": "6:microliter"
+              },
+              "4": {
+                "volume": "6:microliter"
+              },
+              "5": {
+                "volume": "6:microliter"
+              },
+              "6": {
+                "volume": "6:microliter"
+              },
+              "7": {
+                "volume": "6:microliter"
+              },
+              "8": {
+                "volume": "6:microliter"
+              },
+              "9": {
+                "volume": "6:microliter"
+              },
+              "10": {
+                "volume": "6:microliter"
+              },
+              "11": {
+                "volume": "6:microliter"
+              },
+              "12": {
+                "volume": "6:microliter"
+              },
+              "13": {
+                "volume": "6:microliter"
+              },
+              "14": {
+                "volume": "6:microliter"
+              },
+              "15": {
+                "volume": "6:microliter"
+              },
+              "16": {
+                "volume": "6:microliter"
+              },
+              "17": {
+                "volume": "6:microliter"
+              },
+              "18": {
+                "volume": "6:microliter"
+              },
+              "19": {
+                "volume": "6:microliter"
+              },
+              "20": {
+                "volume": "6:microliter"
+              },
+              "21": {
+                "volume": "6:microliter"
+              },
+              "22": {
+                "volume": "6:microliter"
+              },
+              "23": {
+                "volume": "6:microliter"
+              },
+              "24": {
+                "volume": "6:microliter"
+              },
+              "25": {
+                "volume": "6:microliter"
+              },
+              "26": {
+                "volume": "6:microliter"
+              },
+              "27": {
+                "volume": "6:microliter"
+              },
+              "28": {
+                "volume": "6:microliter"
+              },
+              "29": {
+                "volume": "6:microliter"
+              },
+              "30": {
+                "volume": "6:microliter"
+              },
+              "31": {
+                "volume": "6:microliter"
+              }
+            }
+          }
+        },
+        "parameters": {
+          "growth_media": "lb-broth-100ug-ml-specto",
+          "constructs": [
+            "construct_aliquots/0",
+            "construct_aliquots/1",
+            "construct_aliquots/2",
+            "construct_aliquots/3",
+            "construct_aliquots/4",
+            "construct_aliquots/5",
+            "construct_aliquots/6",
+            "construct_aliquots/7",
+            "construct_aliquots/8",
+            "construct_aliquots/9",
+            "construct_aliquots/10",
+            "construct_aliquots/11",
+            "construct_aliquots/12",
+            "construct_aliquots/13",
+            "construct_aliquots/14",
+            "construct_aliquots/15",
+            "construct_aliquots/16",
+            "construct_aliquots/17",
+            "construct_aliquots/18",
+            "construct_aliquots/19",
+            "construct_aliquots/20",
+            "construct_aliquots/21",
+            "construct_aliquots/22",
+            "construct_aliquots/23",
+            "construct_aliquots/24",
+            "construct_aliquots/25",
+            "construct_aliquots/26",
+            "construct_aliquots/27",
+            "construct_aliquots/28",
+            "construct_aliquots/29",
+            "construct_aliquots/30",
+            "construct_aliquots/31"
+          ]
+        }
+      },
+      "description": "A protocol for the transformation step in Kunkel Mutagenesis."
+    },
+    {
+      "name": "Sequence",
+      "dependencies": [],
+      "command_string": "python sequence.py",
+      "inputs": {
+        "seq_set": {
+          "type": "group+",
+          "inputs": {
+            "growth_wells": {
+              "type": "aliquot+",
+              "label": "Aliquots of grown colonies to sequence"
+            },
+            "seq_primers": {
+              "type": "aliquot+",
+              "lable": "One or more sequencing primer, selected from inventory."
+            }
+          }
+        }
+      },
+      "preview": {
+        "refs": {
+          "growth_plate": {
+            "type": "96-pcr",
+            "store": "cold_4",
+            "aliquots": {
+              "0": {
+                "volume": "150:microliter"
+              },
+              "1": {
+                "volume": "150:microliter"
+              },
+              "2": {
+                "volume": "150:microliter"
+              },
+              "3": {
+                "volume": "150:microliter"
+              },
+              "4": {
+                "volume": "150:microliter"
+              },
+              "5": {
+                "volume": "150:microliter"
+              },
+              "6": {
+                "volume": "150:microliter"
+              },
+              "7": {
+                "volume": "150:microliter"
+              },
+              "8": {
+                "volume": "150:microliter"
+              },
+              "9": {
+                "volume": "150:microliter"
+              },
+              "10": {
+                "volume": "150:microliter"
+              },
+              "11": {
+                "volume": "150:microliter"
+              },
+              "12": {
+                "volume": "150:microliter"
+              },
+              "13": {
+                "volume": "150:microliter"
+              },
+              "14": {
+                "volume": "150:microliter"
+              },
+              "15": {
+                "volume": "150:microliter"
+              },
+              "16": {
+                "volume": "150:microliter"
+              },
+              "17": {
+                "volume": "150:microliter"
+              },
+              "18": {
+                "volume": "150:microliter"
+              },
+              "19": {
+                "volume": "150:microliter"
+              },
+              "20": {
+                "volume": "150:microliter"
+              },
+              "21": {
+                "volume": "150:microliter"
+              },
+              "22": {
+                "volume": "150:microliter"
+              },
+              "23": {
+                "volume": "150:microliter"
+              },
+              "24": {
+                "volume": "150:microliter"
+              },
+              "25": {
+                "volume": "150:microliter"
+              },
+              "26": {
+                "volume": "150:microliter"
+              },
+              "27": {
+                "volume": "150:microliter"
+              },
+              "28": {
+                "volume": "150:microliter"
+              },
+              "29": {
+                "volume": "150:microliter"
+              },
+              "30": {
+                "volume": "150:microliter"
+              },
+              "31": {
+                "volume": "150:microliter"
+              },
+              "32": {
+                "volume": "150:microliter"
+              },
+              "33": {
+                "volume": "150:microliter"
+              },
+              "34": {
+                "volume": "150:microliter"
+              },
+              "35": {
+                "volume": "150:microliter"
+              },
+              "36": {
+                "volume": "150:microliter"
+              },
+              "37": {
+                "volume": "150:microliter"
+              },
+              "38": {
+                "volume": "150:microliter"
+              },
+              "39": {
+                "volume": "150:microliter"
+              },
+              "40": {
+                "volume": "150:microliter"
+              },
+              "41": {
+                "volume": "150:microliter"
+              },
+              "42": {
+                "volume": "150:microliter"
+              },
+              "43": {
+                "volume": "150:microliter"
+              },
+              "44": {
+                "volume": "150:microliter"
+              },
+              "45": {
+                "volume": "150:microliter"
+              },
+              "46": {
+                "volume": "150:microliter"
+              },
+              "47": {
+                "volume": "150:microliter"
+              },
+              "48": {
+                "volume": "150:microliter"
+              },
+              "49": {
+                "volume": "150:microliter"
+              },
+              "50": {
+                "volume": "150:microliter"
+              },
+              "51": {
+                "volume": "150:microliter"
+              },
+              "52": {
+                "volume": "150:microliter"
+              },
+              "53": {
+                "volume": "150:microliter"
+              },
+              "54": {
+                "volume": "150:microliter"
+              },
+              "55": {
+                "volume": "150:microliter"
+              },
+              "56": {
+                "volume": "150:microliter"
+              },
+              "57": {
+                "volume": "150:microliter"
+              },
+              "58": {
+                "volume": "150:microliter"
+              },
+              "59": {
+                "volume": "150:microliter"
+              },
+              "60": {
+                "volume": "150:microliter"
+              },
+              "61": {
+                "volume": "150:microliter"
+              },
+              "62": {
+                "volume": "150:microliter"
+              },
+              "63": {
+                "volume": "150:microliter"
+              },
+              "64": {
+                "volume": "150:microliter"
+              },
+              "65": {
+                "volume": "150:microliter"
+              },
+              "66": {
+                "volume": "150:microliter"
+              },
+              "67": {
+                "volume": "150:microliter"
+              },
+              "68": {
+                "volume": "150:microliter"
+              },
+              "69": {
+                "volume": "150:microliter"
+              },
+              "70": {
+                "volume": "150:microliter"
+              },
+              "71": {
+                "volume": "150:microliter"
+              },
+              "72": {
+                "volume": "150:microliter"
+              },
+              "73": {
+                "volume": "150:microliter"
+              },
+              "74": {
+                "volume": "150:microliter"
+              },
+              "75": {
+                "volume": "150:microliter"
+              },
+              "76": {
+                "volume": "150:microliter"
+              },
+              "77": {
+                "volume": "150:microliter"
+              },
+              "78": {
+                "volume": "150:microliter"
+              },
+              "79": {
+                "volume": "150:microliter"
+              },
+              "80": {
+                "volume": "150:microliter"
+              },
+              "81": {
+                "volume": "150:microliter"
+              },
+              "82": {
+                "volume": "150:microliter"
+              },
+              "83": {
+                "volume": "150:microliter"
+              },
+              "84": {
+                "volume": "150:microliter"
+              },
+              "85": {
+                "volume": "150:microliter"
+              },
+              "86": {
+                "volume": "150:microliter"
+              },
+              "87": {
+                "volume": "150:microliter"
+              },
+              "88": {
+                "volume": "150:microliter"
+              },
+              "89": {
+                "volume": "150:microliter"
+              },
+              "90": {
+                "volume": "150:microliter"
+              },
+              "91": {
+                "volume": "150:microliter"
+              },
+              "92": {
+                "volume": "150:microliter"
+              },
+              "93": {
+                "volume": "150:microliter"
+              },
+              "94": {
+                "volume": "150:microliter"
+              },
+              "95": {
+                "volume": "150:microliter"
+              }
+            }
+          },
+          "primer_1": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "primer_2": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "primer_3": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          },
+          "primer_4": {
+            "type": "micro-2.0",
+            "store": "cold_20",
+            "aliquots": {
+              "0": {
+                "volume": "100:microliter"
+              }
+            }
+          }
+        },
+        "parameters": {
+          "seq_set": [
+            {
+              "growth_wells": [
+                "growth_plate/0",
+                "growth_plate/12",
+                "growth_plate/24",
+                "growth_plate/36",
+                "growth_plate/48",
+                "growth_plate/60",
+                "growth_plate/72",
+                "growth_plate/84",
+                "growth_plate/13",
+                "growth_plate/25",
+                "growth_plate/37",
+                "growth_plate/49",
+                "growth_plate/61",
+                "growth_plate/73",
+                "growth_plate/85",
+                "growth_plate/2",
+                "growth_plate/14",
+                "growth_plate/26",
+                "growth_plate/38",
+                "growth_plate/50",
+                "growth_plate/62",
+                "growth_plate/74",
+                "growth_plate/86",
+                "growth_plate/3",
+                "growth_plate/15",
+                "growth_plate/27",
+                "growth_plate/39",
+                "growth_plate/51",
+                "growth_plate/63",
+                "growth_plate/75",
+                "growth_plate/87",
+                "growth_plate/4",
+                "growth_plate/16",
+                "growth_plate/28",
+                "growth_plate/40",
+                "growth_plate/52",
+                "growth_plate/64",
+                "growth_plate/76",
+                "growth_plate/88",
+                "growth_plate/5",
+                "growth_plate/17",
+                "growth_plate/29",
+                "growth_plate/41",
+                "growth_plate/53",
+                "growth_plate/65",
+                "growth_plate/77",
+                "growth_plate/89",
+                "growth_plate/6",
+                "growth_plate/18",
+                "growth_plate/30",
+                "growth_plate/42",
+                "growth_plate/54",
+                "growth_plate/66",
+                "growth_plate/78",
+                "growth_plate/90",
+                "growth_plate/7",
+                "growth_plate/19",
+                "growth_plate/31",
+                "growth_plate/43",
+                "growth_plate/55",
+                "growth_plate/67",
+                "growth_plate/79",
+                "growth_plate/91",
+                "growth_plate/8",
+                "growth_plate/20",
+                "growth_plate/32",
+                "growth_plate/44",
+                "growth_plate/56",
+                "growth_plate/68",
+                "growth_plate/80",
+                "growth_plate/92",
+                "growth_plate/9",
+                "growth_plate/21",
+                "growth_plate/33",
+                "growth_plate/45",
+                "growth_plate/57",
+                "growth_plate/69",
+                "growth_plate/81",
+                "growth_plate/93",
+                "growth_plate/10",
+                "growth_plate/22",
+                "growth_plate/34",
+                "growth_plate/46",
+                "growth_plate/58",
+                "growth_plate/70",
+                "growth_plate/82",
+                "growth_plate/94",
+                "growth_plate/11",
+                "growth_plate/23",
+                "growth_plate/35",
+                "growth_plate/47",
+                "growth_plate/59",
+                "growth_plate/71",
+                "growth_plate/83",
+                "growth_plate/95"
+              ],
+              "seq_primers": [
+                "primer_4/0",
+                "primer_2/0"
+              ]
+            },
+            {
+              "growth_wells": [
+                "growth_plate/0",
+                "growth_plate/12",
+                "growth_plate/24",
+                "growth_plate/36",
+                "growth_plate/48",
+                "growth_plate/60",
+                "growth_plate/72",
+                "growth_plate/84",
+                "growth_plate/13",
+                "growth_plate/25",
+                "growth_plate/37",
+                "growth_plate/49",
+                "growth_plate/61",
+                "growth_plate/73",
+                "growth_plate/85",
+                "growth_plate/2",
+                "growth_plate/14",
+                "growth_plate/26",
+                "growth_plate/38",
+                "growth_plate/50",
+                "growth_plate/62",
+                "growth_plate/74",
+                "growth_plate/86",
+                "growth_plate/3",
+                "growth_plate/15",
+                "growth_plate/27",
+                "growth_plate/39",
+                "growth_plate/51",
+                "growth_plate/63",
+                "growth_plate/75",
+                "growth_plate/87",
+                "growth_plate/4",
+                "growth_plate/16",
+                "growth_plate/28",
+                "growth_plate/40",
+                "growth_plate/52",
+                "growth_plate/64",
+                "growth_plate/76",
+                "growth_plate/88",
+                "growth_plate/5"
+              ],
+              "seq_primers": [
+                "primer_1/0"
+              ]
+            },
+            {
+              "growth_wells": [
+                "growth_plate/34",
+                "growth_plate/46",
+                "growth_plate/58",
+                "growth_plate/70",
+                "growth_plate/82",
+                "growth_plate/94",
+                "growth_plate/11",
+                "growth_plate/23",
+                "growth_plate/35",
+                "growth_plate/47",
+                "growth_plate/59",
+                "growth_plate/71",
+                "growth_plate/83",
+                "growth_plate/95"
+              ],
+              "seq_primers": [
+                "primer_3/0",
+                "primer_1/0"
+              ]
+            },
+            {
+              "growth_wells": [
+                "growth_plate/37",
+                "growth_plate/49",
+                "growth_plate/61",
+                "growth_plate/73",
+                "growth_plate/85",
+                "growth_plate/2",
+                "growth_plate/14",
+                "growth_plate/26",
+                "growth_plate/38",
+                "growth_plate/50",
+                "growth_plate/62",
+                "growth_plate/74",
+                "growth_plate/86",
+                "growth_plate/3",
+                "growth_plate/15",
+                "growth_plate/27",
+                "growth_plate/39",
+                "growth_plate/51",
+                "growth_plate/63",
+                "growth_plate/75",
+                "growth_plate/87",
+                "growth_plate/4",
+                "growth_plate/16",
+                "growth_plate/28",
+                "growth_plate/40",
+                "growth_plate/52",
+                "growth_plate/64",
+                "growth_plate/76",
+                "growth_plate/88",
+                "growth_plate/5",
+                "growth_plate/17",
+                "growth_plate/29",
+                "growth_plate/41",
+                "growth_plate/53",
+                "growth_plate/65",
+                "growth_plate/77",
+                "growth_plate/89",
+                "growth_plate/6"
+              ],
+              "seq_primers": [
+                "primer_3/0"
+              ]
+            }
+          ]
+        }
+      },
+      "description": "This is a protocol."
+    }
+  ],
+  "license": "MIT",
+  "format": "python"
+}
