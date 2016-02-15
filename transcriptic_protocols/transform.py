@@ -65,33 +65,8 @@ def transform(protocol, params):
     for agar_p in agar_plates:
         protocol.incubate(agar_p, "warm_37", "16:hour")
 
-    growth_plate = protocol.ref("growth_plate_kunkel_%s" % printdatetime(time=False), None, "96-flat", storage='cold_4')
-    total_cols = num_colonies * num_constructs
-    if total_cols > 96:
-        raise UserError("This protocol is limited to 96 sequenced colonies, please "
-                        "submit additional runs if needed.")
-    cols = int(math.ceil(total_cols / float(8)))
-    columns = [{"column": i, "volume": "150:microliter"} for i in range(0, cols)]
-    protocol.dispense(growth_plate, params['growth_media'], columns)
-
-    growth_wells = growth_plate.all_wells(columnwise=True)
-
-    for i, c in enumerate(constructs):
-        protocol.autopick(agar_wells[i],
-                          growth_wells[i*num_colonies:i*num_colonies+num_colonies],
-                          #min_count=0,
-                          dataref="%s" % agar_wells[i].name)
-        for j in range(num_colonies):
-            growth_wells[i*num_colonies+j].set_name('%s_growth_%s' % (agar_wells[i].name, j+1))
-            if 'mutant_objs' in params.keys():
-                mut = next(m for m in params['mutant_objs'] if m.name == agar_wells[i].name)
-                mut.add_growth_wells(growth_wells[i*num_colonies+j])
-
-    protocol.cover(growth_plate, lid="low_evaporation")
-    protocol.incubate(growth_plate, "warm_37", "16:hour", shaking=True, co2=0)
-
-    # return growth plate for uncovering in full script
-    return growth_plate
+    # return agar plates for shipping in full script 
+    return agar_plates 
 
 if __name__ == '__main__':
     from autoprotocol.harness import run
